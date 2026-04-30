@@ -12,6 +12,7 @@ from typing import Optional
 from contextlib import contextmanager, asynccontextmanager
 import sqlite3
 import math
+import os
 
 
 def ahora_utc():
@@ -35,6 +36,21 @@ RADIO_VALIDO_METROS = 500
 TIEMPO_VALIDEZ_MINUTOS = 15
 
 DB_PATH = "tren.db"
+
+# Orígenes permitidos para CORS.
+# En desarrollo permitimos localhost y 127.0.0.1 en distintos puertos.
+# En producción, agrega la URL de tu frontend desde la variable FRONTEND_URL.
+CORS_ORIGINS = [
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8080",
+]
+# Si se define la variable de entorno FRONTEND_URL, se agrega a la lista
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url:
+    CORS_ORIGINS.append(frontend_url)
 
 # ============================================================
 # BASE DE DATOS
@@ -139,10 +155,10 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS para que el frontend pueda llamar al backend
+# CORS: solo orígenes permitidos (configurables vía variable FRONTEND_URL)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # En producción, especifica los dominios
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -317,4 +333,5 @@ def obtener_estadisticas():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)

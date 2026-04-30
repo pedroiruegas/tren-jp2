@@ -355,8 +355,11 @@
         // ============================================================
         // CONFIGURACIÓN
         // ============================================================
-        const API_URL = 'http://localhost:8000';
-        // ⚠️ Cuando despliegues, cambia esto por tu URL de producción
+        // Detecta automáticamente si estamos en local o producción
+        const API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+            ? 'http://localhost:8000'
+            : 'https://tren-jp2-api.onrender.com';
+        // ⚠️ Cuando despliegues en Render, cambia la URL de producción de arriba
         
         // ============================================================
         // UTILIDADES
