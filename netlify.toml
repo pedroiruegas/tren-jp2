@@ -1,0 +1,7 @@
+[build]
+  publish = "."
+  command = ""
+  ignore = "/bin/false"
+
+[build.environment]
+  NETLIFY_USE_PYTHON = "false"
