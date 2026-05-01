@@ -2,24 +2,34 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
 venv/
 env/
 .venv/
 
-# Base de datos local
+# Base de datos local (no se sube)
 *.db
 *.sqlite
 *.sqlite3
 
-# Editor
+# Editores
 .vscode/
 .idea/
 *.swp
+*.swo
+*~
 
-# SO
+# Sistema operativo
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Variables de entorno
 .env
 .env.local
+.env.production
+
+# Logs
+*.log
+logs/
