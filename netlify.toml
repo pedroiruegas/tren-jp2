@@ -1,7 +1,8 @@
 [build]
   publish = "."
-  command = ""
-  ignore = "/bin/false"
+  command = "echo 'No build needed'"
 
 [build.environment]
+  PYTHON_VERSION = ""
   NETLIFY_USE_PYTHON = "false"
+  NETLIFY_SKIP_PYTHON_REQUIREMENTS = "true"
