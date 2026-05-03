@@ -210,25 +210,67 @@ def crear_reporte(reporte: ReporteCrear):
         }
 
 
+@app.post("/confirmar-libre", response_model=dict)
+def confirmar_via_libre(reporte: ReporteCrear):
+    """Registra un reporte de 'vía libre' (no hay tren).
+    
+    Estos reportes alimentan el modelo de patrones: nos dicen que en
+    cierto momento del día/semana, no había tren. Mientras más datos,
+    mejores predicciones.
+    """
+    
+    # Misma validación de geolocalización
+    distancia = distancia_metros(
+        reporte.latitud, reporte.longitud,
+        CRUCE_LAT, CRUCE_LON
+    )
+    
+    if distancia > RADIO_VALIDO_METROS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Estás muy lejos del cruce ({int(distancia)}m). El reporte debe hacerse dentro de {RADIO_VALIDO_METROS}m."
+        )
+    
+    # Forzar el tipo a 'via_libre' sin importar lo que mande el cliente
+    with get_db() as conn:
+        cursor = conn.execute(
+            """INSERT INTO reportes (latitud, longitud, usuario, tipo, comentario)
+               VALUES (?, ?, ?, 'via_libre', ?)""",
+            (reporte.latitud, reporte.longitud, reporte.usuario, reporte.comentario)
+        )
+        conn.commit()
+        
+        return {
+            "ok": True,
+            "id": cursor.lastrowid,
+            "mensaje": "¡Gracias! Confirmaste que la vía está libre ✅"
+        }
+
+
 @app.get("/estado", response_model=EstadoActual)
 def obtener_estado():
-    """Devuelve el estado actual del cruce: hay tren o no."""
+    """Devuelve el estado actual del cruce: hay tren o no.
+    
+    Solo considera reportes de tipo 'tren_pasando' como evidencia de tren activo.
+    Los reportes de tipo 'via_libre' se ignoran aquí (sirven para análisis de patrones).
+    """
     
     limite_tiempo = ahora_utc() - timedelta(minutes=TIEMPO_VALIDEZ_MINUTOS)
     
     with get_db() as conn:
-        # Buscar el reporte más reciente dentro de la ventana de validez
+        # Buscar el reporte de tren más reciente dentro de la ventana de validez
         row = conn.execute(
             """SELECT * FROM reportes 
-               WHERE timestamp >= ?
+               WHERE timestamp >= ? AND tipo = 'tren_pasando'
                ORDER BY timestamp DESC 
                LIMIT 1""",
             (limite_tiempo,)
         ).fetchone()
         
-        # Contar todos los reportes recientes
+        # Contar todos los reportes de tren recientes
         count = conn.execute(
-            "SELECT COUNT(*) as total FROM reportes WHERE timestamp >= ?",
+            """SELECT COUNT(*) as total FROM reportes 
+               WHERE timestamp >= ? AND tipo = 'tren_pasando'""",
             (limite_tiempo,)
         ).fetchone()["total"]
         
@@ -328,6 +370,104 @@ def obtener_estadisticas():
             "por_dia_semana": [{"dia": dias_nombres[r["dia"]], 
                                 "cantidad": r["cantidad"]} 
                                for r in por_dia]
+        }
+
+
+@app.get("/patrones")
+def obtener_patrones():
+    """
+    Análisis predictivo: calcula la probabilidad de que pase el tren
+    por hora del día y por día de la semana, basado en reportes históricos.
+    
+    Compara reportes de 'tren_pasando' vs 'via_libre' para inferir patrones reales.
+    """
+    dias_nombres = ["Domingo", "Lunes", "Martes", "Miércoles",
+                    "Jueves", "Viernes", "Sábado"]
+    
+    with get_db() as conn:
+        # Conteos generales por tipo
+        conteos = conn.execute("""
+            SELECT tipo, COUNT(*) as total 
+            FROM reportes 
+            GROUP BY tipo
+        """).fetchall()
+        
+        totales = {row["tipo"]: row["total"] for row in conteos}
+        total_tren = totales.get("tren_pasando", 0)
+        total_libre = totales.get("via_libre", 0)
+        total_general = total_tren + total_libre
+        
+        # Probabilidad por hora del día
+        por_hora = conn.execute("""
+            SELECT 
+                CAST(strftime('%H', timestamp, 'localtime') AS INTEGER) as hora,
+                SUM(CASE WHEN tipo = 'tren_pasando' THEN 1 ELSE 0 END) as trenes,
+                SUM(CASE WHEN tipo = 'via_libre' THEN 1 ELSE 0 END) as libres,
+                COUNT(*) as total
+            FROM reportes
+            GROUP BY hora
+            ORDER BY hora
+        """).fetchall()
+        
+        # Probabilidad por día de la semana
+        por_dia = conn.execute("""
+            SELECT 
+                CAST(strftime('%w', timestamp, 'localtime') AS INTEGER) as dia,
+                SUM(CASE WHEN tipo = 'tren_pasando' THEN 1 ELSE 0 END) as trenes,
+                SUM(CASE WHEN tipo = 'via_libre' THEN 1 ELSE 0 END) as libres,
+                COUNT(*) as total
+            FROM reportes
+            GROUP BY dia
+            ORDER BY dia
+        """).fetchall()
+        
+        def calcular_probabilidad(trenes, libres):
+            """Calcula probabilidad % con suavizado de Laplace para evitar 0% / 100% extremos."""
+            # Suavizado de Laplace: agregar 1 a cada categoría 
+            # para no dar 100% o 0% con pocos datos
+            return round((trenes + 1) / (trenes + libres + 2) * 100, 1)
+        
+        # Identificar la "hora pico" (mayor probabilidad de tren)
+        hora_pico = None
+        prob_max = 0
+        if por_hora:
+            for r in por_hora:
+                if r["total"] >= 3:  # Solo si hay datos suficientes
+                    p = calcular_probabilidad(r["trenes"], r["libres"])
+                    if p > prob_max:
+                        prob_max = p
+                        hora_pico = r["hora"]
+        
+        return {
+            "total_reportes": total_general,
+            "reportes_tren": total_tren,
+            "reportes_libre": total_libre,
+            "datos_suficientes": total_general >= 20,
+            "hora_pico": {
+                "hora": hora_pico,
+                "probabilidad": prob_max
+            } if hora_pico is not None else None,
+            "por_hora": [
+                {
+                    "hora": r["hora"],
+                    "trenes": r["trenes"],
+                    "libres": r["libres"],
+                    "total_muestras": r["total"],
+                    "probabilidad_tren": calcular_probabilidad(r["trenes"], r["libres"])
+                }
+                for r in por_hora
+            ],
+            "por_dia": [
+                {
+                    "dia": dias_nombres[r["dia"]],
+                    "dia_num": r["dia"],
+                    "trenes": r["trenes"],
+                    "libres": r["libres"],
+                    "total_muestras": r["total"],
+                    "probabilidad_tren": calcular_probabilidad(r["trenes"], r["libres"])
+                }
+                for r in por_dia
+            ]
         }
 
 

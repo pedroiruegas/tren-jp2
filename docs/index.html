@@ -18,9 +18,10 @@
             --border: #2a2a3a;
             --text: #e8e8f0;
             --text-dim: #8888a0;
-            --accent: #ffb627;        /* amarillo señal de tren */
-            --accent-warm: #ff6b35;   /* naranja alerta */
+            --accent: #ffb627;
+            --accent-warm: #ff6b35;
             --success: #4ade80;
+            --success-deep: #22c55e;
             --danger: #ef4444;
             --display: 'Bricolage Grotesque', system-ui, sans-serif;
             --mono: 'JetBrains Mono', monospace;
@@ -41,7 +42,6 @@
             overscroll-behavior: none;
         }
         
-        /* Fondo con sutil ruido y gradiente */
         body {
             background: 
                 radial-gradient(ellipse at top, #1a1a28 0%, var(--bg) 60%),
@@ -73,7 +73,6 @@
             z-index: 1;
         }
         
-        /* HEADER */
         header {
             display: flex;
             justify-content: space-between;
@@ -113,7 +112,6 @@
             letter-spacing: 0.1em;
         }
         
-        /* CARD PRINCIPAL */
         .estado-card {
             background: var(--bg-elev);
             border: 1px solid var(--border);
@@ -150,13 +148,8 @@
             margin-bottom: 12px;
         }
         
-        .con-tren .estado-titulo {
-            color: var(--accent);
-        }
-        
-        .sin-tren .estado-titulo {
-            color: var(--success);
-        }
+        .con-tren .estado-titulo { color: var(--accent); }
+        .sin-tren .estado-titulo { color: var(--success); }
         
         .estado-descripcion {
             color: var(--text-dim);
@@ -182,17 +175,21 @@
             font-weight: 600;
         }
         
-        /* BOTÓN PRINCIPAL DE REPORTE */
-        .reportar-btn {
+        .botones-grupo {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .accion-btn {
             width: 100%;
-            padding: 24px;
+            padding: 22px 24px;
             border: none;
             border-radius: 20px;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-warm) 100%);
-            color: #0a0a0f;
             font-family: var(--display);
             font-weight: 800;
-            font-size: 19px;
+            font-size: 18px;
             letter-spacing: -0.01em;
             cursor: pointer;
             display: flex;
@@ -200,15 +197,32 @@
             justify-content: center;
             gap: 12px;
             transition: transform 0.15s ease, box-shadow 0.15s ease;
-            box-shadow: 0 4px 24px rgba(255, 182, 39, 0.25);
-            margin-bottom: 12px;
         }
         
-        .reportar-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(255, 182, 39, 0.35); }
-        .reportar-btn:active { transform: translateY(0) scale(0.98); }
-        .reportar-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .accion-btn:active { transform: scale(0.98); }
+        .accion-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
-        .reportar-btn .icon { font-size: 24px; }
+        .accion-btn .icon { font-size: 22px; }
+        
+        .btn-tren {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-warm) 100%);
+            color: #0a0a0f;
+            box-shadow: 0 4px 24px rgba(255, 182, 39, 0.25);
+        }
+        .btn-tren:hover:not(:disabled) { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 32px rgba(255, 182, 39, 0.35); 
+        }
+        
+        .btn-libre {
+            background: linear-gradient(135deg, var(--success) 0%, var(--success-deep) 100%);
+            color: #0a0a0f;
+            box-shadow: 0 4px 24px rgba(74, 222, 128, 0.2);
+        }
+        .btn-libre:hover:not(:disabled) { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 32px rgba(74, 222, 128, 0.3); 
+        }
         
         .hint {
             text-align: center;
@@ -220,7 +234,6 @@
             margin-bottom: 32px;
         }
         
-        /* SECCIÓN DE HISTORIAL/ESTADÍSTICAS */
         .seccion {
             margin-bottom: 24px;
         }
@@ -235,6 +248,134 @@
             font-family: var(--mono);
         }
         
+        .patrones-card {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+        
+        .patron-destacado {
+            background: linear-gradient(135deg, rgba(255, 182, 39, 0.08), rgba(255, 107, 53, 0.04));
+            border: 1px solid rgba(255, 182, 39, 0.25);
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-bottom: 18px;
+        }
+        
+        .patron-destacado-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 6px;
+        }
+        
+        .patron-destacado-texto {
+            font-size: 15px;
+            line-height: 1.4;
+            color: var(--text);
+            font-weight: 600;
+        }
+        
+        .patron-destacado-texto strong {
+            color: var(--accent);
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding: 4px;
+            background: var(--bg-elev-2);
+            border-radius: 10px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 8px 12px;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            border-radius: 7px;
+            transition: all 0.2s;
+        }
+        
+        .tab.active {
+            background: var(--bg-elev);
+            color: var(--text);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .barra-fila {
+            display: grid;
+            grid-template-columns: 56px 1fr 50px;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 0;
+            font-size: 13px;
+        }
+        
+        .barra-label {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+        
+        .barra-track {
+            height: 10px;
+            background: var(--bg-elev-2);
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .barra-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .barra-fill.muy-bajo { background: var(--success); }
+        .barra-fill.bajo { background: linear-gradient(90deg, var(--success), #a3e635); }
+        .barra-fill.medio { background: linear-gradient(90deg, #a3e635, var(--accent)); }
+        .barra-fill.alto { background: linear-gradient(90deg, var(--accent), var(--accent-warm)); }
+        
+        .barra-valor {
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+            text-align: right;
+        }
+        
+        .barra-fila.sin-datos .barra-valor {
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+        
+        .vacio {
+            text-align: center;
+            padding: 24px 16px;
+            color: var(--text-dim);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .vacio strong {
+            color: var(--text);
+            display: block;
+            margin-bottom: 6px;
+        }
+        
         .historial {
             background: var(--bg-elev);
             border: 1px solid var(--border);
@@ -246,9 +387,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 18px;
+            padding: 13px 16px;
             border-radius: 12px;
             font-size: 14px;
+            gap: 8px;
         }
         
         .reporte-item + .reporte-item {
@@ -256,25 +398,22 @@
             border-radius: 0;
         }
         
-        .reporte-tiempo {
-            font-family: var(--mono);
-            color: var(--accent);
-            font-weight: 600;
-        }
-        
-        .reporte-usuario {
-            color: var(--text-dim);
+        .reporte-tipo {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             font-size: 13px;
         }
         
-        .vacio {
-            text-align: center;
-            padding: 32px 20px;
+        .reporte-tipo.tren { color: var(--accent); }
+        .reporte-tipo.libre { color: var(--success); }
+        
+        .reporte-tiempo {
+            font-family: var(--mono);
+            font-size: 11px;
             color: var(--text-dim);
-            font-size: 14px;
         }
         
-        /* TOAST */
         .toast {
             position: fixed;
             bottom: 24px;
@@ -301,18 +440,6 @@
         
         .toast.success { border-color: var(--success); }
         .toast.error { border-color: var(--danger); }
-        
-        /* FOOTER */
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            padding: 20px 0;
-            font-family: var(--mono);
-            font-size: 10px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-        }
     </style>
 </head>
 <body>
@@ -335,11 +462,25 @@
             </div>
         </div>
         
-        <button id="reportarBtn" class="reportar-btn">
-            <span class="icon">🚂</span>
-            <span>Reportar tren ahora</span>
-        </button>
+        <div class="botones-grupo">
+            <button id="reportarBtn" class="accion-btn btn-tren">
+                <span class="icon">🚂</span>
+                <span>Reportar tren ahora</span>
+            </button>
+            
+            <button id="libreBtn" class="accion-btn btn-libre">
+                <span class="icon">✅</span>
+                <span>Confirmar vía libre</span>
+            </button>
+        </div>
         <p class="hint">Comparte tu ubicación al reportar</p>
+        
+        <section class="seccion">
+            <h2 class="seccion-titulo">📊 Patrones históricos</h2>
+            <div class="patrones-card" id="patronesCard">
+                <div class="vacio">Cargando análisis...</div>
+            </div>
+        </section>
         
         <section class="seccion">
             <h2 class="seccion-titulo">Últimas 24 horas</h2>
@@ -352,18 +493,12 @@
     <div id="toast" class="toast"></div>
     
     <script>
-        // ============================================================
-        // CONFIGURACIÓN
-        // ============================================================
-        // Detecta automáticamente si estamos en local o producción
         const API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
             ? 'http://localhost:8000'
             : 'https://tren-jp2-api.onrender.com';
-        // ⚠️ Cuando despliegues en Render, cambia la URL de producción de arriba
         
-        // ============================================================
-        // UTILIDADES
-        // ============================================================
+        let vistaPatron = 'horas';
+        
         function showToast(msg, tipo = 'info') {
             const toast = document.getElementById('toast');
             toast.textContent = msg;
@@ -373,18 +508,45 @@
         
         function tiempoRelativo(timestamp) {
             const ahora = new Date();
-            const fecha = new Date(timestamp);
+            const fecha = new Date(timestamp + 'Z');
             const min = Math.floor((ahora - fecha) / 60000);
             if (min < 1) return 'ahora';
-            if (min < 60) return `hace ${min} min`;
+            if (min < 60) return `hace ${min}m`;
             const horas = Math.floor(min / 60);
             if (horas < 24) return `hace ${horas}h`;
             return fecha.toLocaleDateString('es-MX');
         }
         
-        // ============================================================
-        // CONSULTAR ESTADO
-        // ============================================================
+        function clasificarProbabilidad(p) {
+            if (p < 25) return 'muy-bajo';
+            if (p < 50) return 'bajo';
+            if (p < 75) return 'medio';
+            return 'alto';
+        }
+        
+        function obtenerUbicacion() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error('Tu navegador no soporta geolocalización'));
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => resolve(pos),
+                    (err) => reject(new Error('No pude obtener tu ubicación. Activa GPS.')),
+                    { enableHighAccuracy: true, timeout: 10000 }
+                );
+            });
+        }
+        
+        function getUsuario() {
+            let usuario = localStorage.getItem('tren_usuario');
+            if (!usuario) {
+                usuario = prompt('¿Cómo te llamas? (solo la primera vez)') || 'anónimo';
+                localStorage.setItem('tren_usuario', usuario);
+            }
+            return usuario;
+        }
+        
         async function actualizarEstado() {
             try {
                 const res = await fetch(`${API_URL}/estado`);
@@ -416,12 +578,126 @@
             }
         }
         
-        // ============================================================
-        // CARGAR HISTORIAL
-        // ============================================================
+        async function cargarPatrones() {
+            try {
+                const res = await fetch(`${API_URL}/patrones`);
+                const data = await res.json();
+                renderPatrones(data);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        
+        function renderPatrones(data) {
+            const cont = document.getElementById('patronesCard');
+            
+            if (!data.datos_suficientes) {
+                cont.innerHTML = `
+                    <div class="vacio">
+                        <strong>Aprendiendo de la comunidad 🧠</strong>
+                        Necesitamos al menos 20 reportes para detectar patrones.<br>
+                        Llevamos <strong style="color: var(--accent)">${data.total_reportes}</strong> hasta ahora.
+                    </div>
+                `;
+                return;
+            }
+            
+            let destacado = '';
+            if (data.hora_pico) {
+                const h = data.hora_pico.hora;
+                const horaStr = h === 0 ? '12am' : h < 12 ? `${h}am` : h === 12 ? '12pm' : `${h-12}pm`;
+                destacado = `
+                    <div class="patron-destacado">
+                        <div class="patron-destacado-label">🎯 Hora pico detectada</div>
+                        <div class="patron-destacado-texto">
+                            Históricamente, alrededor de las <strong>${horaStr}</strong> hay tren un 
+                            <strong>${data.hora_pico.probabilidad}%</strong> de las veces.
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const tabs = `
+                <div class="tabs">
+                    <button class="tab ${vistaPatron === 'horas' ? 'active' : ''}" onclick="cambiarVista('horas')">Por hora</button>
+                    <button class="tab ${vistaPatron === 'dias' ? 'active' : ''}" onclick="cambiarVista('dias')">Por día</button>
+                </div>
+            `;
+            
+            let barras = '';
+            if (vistaPatron === 'horas') {
+                const datosPorHora = {};
+                data.por_hora.forEach(h => datosPorHora[h.hora] = h);
+                
+                for (let h = 0; h < 24; h++) {
+                    const horaStr = h === 0 ? '12am' : h < 12 ? `${h}am` : h === 12 ? '12pm' : `${h-12}pm`;
+                    const d = datosPorHora[h];
+                    if (d && d.total_muestras >= 2) {
+                        const cls = clasificarProbabilidad(d.probabilidad_tren);
+                        barras += `
+                            <div class="barra-fila">
+                                <span class="barra-label">${horaStr}</span>
+                                <div class="barra-track">
+                                    <div class="barra-fill ${cls}" style="width: ${d.probabilidad_tren}%"></div>
+                                </div>
+                                <span class="barra-valor">${d.probabilidad_tren}%</span>
+                            </div>
+                        `;
+                    } else {
+                        barras += `
+                            <div class="barra-fila sin-datos">
+                                <span class="barra-label">${horaStr}</span>
+                                <div class="barra-track"></div>
+                                <span class="barra-valor">—</span>
+                            </div>
+                        `;
+                    }
+                }
+            } else {
+                const orden = [1, 2, 3, 4, 5, 6, 0];
+                const datosPorDia = {};
+                data.por_dia.forEach(d => datosPorDia[d.dia_num] = d);
+                
+                const nombresCortos = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+                
+                for (const diaIdx of orden) {
+                    const d = datosPorDia[diaIdx];
+                    const nombre = nombresCortos[diaIdx];
+                    if (d && d.total_muestras >= 2) {
+                        const cls = clasificarProbabilidad(d.probabilidad_tren);
+                        barras += `
+                            <div class="barra-fila">
+                                <span class="barra-label">${nombre}</span>
+                                <div class="barra-track">
+                                    <div class="barra-fill ${cls}" style="width: ${d.probabilidad_tren}%"></div>
+                                </div>
+                                <span class="barra-valor">${d.probabilidad_tren}%</span>
+                            </div>
+                        `;
+                    } else {
+                        barras += `
+                            <div class="barra-fila sin-datos">
+                                <span class="barra-label">${nombre}</span>
+                                <div class="barra-track"></div>
+                                <span class="barra-valor">—</span>
+                            </div>
+                        `;
+                    }
+                }
+            }
+            
+            cont.innerHTML = destacado + tabs + barras;
+        }
+        
+        function cambiarVista(vista) {
+            vistaPatron = vista;
+            cargarPatrones();
+        }
+        window.cambiarVista = cambiarVista;
+        
         async function cargarHistorial() {
             try {
-                const res = await fetch(`${API_URL}/historico?horas=24&limite=10`);
+                const res = await fetch(`${API_URL}/historico?horas=24&limite=15`);
                 const data = await res.json();
                 
                 const cont = document.getElementById('historial');
@@ -430,77 +706,72 @@
                     return;
                 }
                 
-                cont.innerHTML = data.reportes.map(r => `
-                    <div class="reporte-item">
-                        <span class="reporte-tiempo">${tiempoRelativo(r.timestamp)}</span>
-                        <span class="reporte-usuario">${r.usuario || 'anónimo'}</span>
-                    </div>
-                `).join('');
+                cont.innerHTML = data.reportes.map(r => {
+                    const esTren = r.tipo === 'tren_pasando';
+                    const tipoClass = esTren ? 'tren' : 'libre';
+                    const tipoIcon = esTren ? '🚂' : '✅';
+                    const tipoTexto = esTren ? 'Tren pasando' : 'Vía libre';
+                    return `
+                        <div class="reporte-item">
+                            <span class="reporte-tipo ${tipoClass}">${tipoIcon} ${tipoTexto}</span>
+                            <span class="reporte-tiempo">${tiempoRelativo(r.timestamp)} · ${r.usuario || 'anónimo'}</span>
+                        </div>
+                    `;
+                }).join('');
                 
             } catch (e) {
                 console.error(e);
             }
         }
         
-        // ============================================================
-        // REPORTAR TREN
-        // ============================================================
-        document.getElementById('reportarBtn').addEventListener('click', async () => {
-            const btn = document.getElementById('reportarBtn');
+        async function enviarReporte(endpoint, btn, textoOriginal) {
             btn.disabled = true;
             btn.querySelector('span:last-child').textContent = 'Obteniendo ubicación...';
             
-            if (!navigator.geolocation) {
-                showToast('Tu navegador no soporta geolocalización', 'error');
-                btn.disabled = false;
-                btn.querySelector('span:last-child').textContent = 'Reportar tren ahora';
-                return;
-            }
-            
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                try {
-                    const usuario = localStorage.getItem('tren_usuario') || 
-                                    prompt('¿Cómo te llamas? (solo la primera vez)') || 'anónimo';
-                    localStorage.setItem('tren_usuario', usuario);
-                    
-                    const res = await fetch(`${API_URL}/reportar`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            latitud: pos.coords.latitude,
-                            longitud: pos.coords.longitude,
-                            usuario: usuario
-                        })
-                    });
-                    
-                    const data = await res.json();
-                    
-                    if (res.ok) {
-                        showToast('¡Reporte enviado! 🚂', 'success');
-                        await actualizarEstado();
-                        await cargarHistorial();
-                    } else {
-                        showToast(data.detail || 'Error al reportar', 'error');
-                    }
-                } catch (e) {
-                    showToast('Error de red', 'error');
-                } finally {
-                    btn.disabled = false;
-                    btn.querySelector('span:last-child').textContent = 'Reportar tren ahora';
+            try {
+                const pos = await obtenerUbicacion();
+                const usuario = getUsuario();
+                
+                btn.querySelector('span:last-child').textContent = 'Enviando...';
+                
+                const res = await fetch(`${API_URL}${endpoint}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        latitud: pos.coords.latitude,
+                        longitud: pos.coords.longitude,
+                        usuario: usuario
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    showToast(data.mensaje, 'success');
+                    await Promise.all([actualizarEstado(), cargarHistorial(), cargarPatrones()]);
+                } else {
+                    showToast(data.detail || 'Error al reportar', 'error');
                 }
-            }, (err) => {
-                showToast('No pude obtener tu ubicación. Activa GPS.', 'error');
+            } catch (e) {
+                showToast(e.message || 'Error de red', 'error');
+            } finally {
                 btn.disabled = false;
-                btn.querySelector('span:last-child').textContent = 'Reportar tren ahora';
-            }, {enableHighAccuracy: true, timeout: 10000});
+                btn.querySelector('span:last-child').textContent = textoOriginal;
+            }
+        }
+        
+        document.getElementById('reportarBtn').addEventListener('click', (e) => {
+            enviarReporte('/reportar', e.currentTarget, 'Reportar tren ahora');
         });
         
-        // ============================================================
-        // INICIO + AUTO-REFRESCO
-        // ============================================================
+        document.getElementById('libreBtn').addEventListener('click', (e) => {
+            enviarReporte('/confirmar-libre', e.currentTarget, 'Confirmar vía libre');
+        });
+        
         actualizarEstado();
         cargarHistorial();
-        setInterval(actualizarEstado, 30000); // refresca cada 30s
+        cargarPatrones();
+        setInterval(actualizarEstado, 30000);
     </script>
 </body>
 </html>
