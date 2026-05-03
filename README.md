@@ -154,17 +154,6 @@ La lista de orígenes permitidos se construye dinámicamente: `localhost` en dis
 - [ ] Bot de Telegram que notifique al canal del barrio
 - [ ] Dashboard de analytics con visualizaciones (Plotly o Chart.js)
 
-## 📊 Aprendizajes clave
-
-Este proyecto me enseñó cosas que ningún tutorial te enseña:
-
-- **Las versiones más nuevas de Python no siempre son las mejores en producción**: aprendí a forzar Python 3.11 con variables de entorno cuando Render seleccionaba 3.14 y rompía la compilación de pydantic-core (que requería Rust en read-only filesystem).
-- **CORS en producción es estricto**: configurar `allow_origins` con la URL exacta del frontend (sin barra final), no `*`. Y agregarlo como variable de entorno permite cambiarlo sin redeployar.
-- **Los tiers gratuitos hibernan**: Render duerme el servicio después de 15 min sin tráfico. La primera petición tarda 30-60s en despertar el contenedor — el frontend debe manejarlo gracefully (timeout largo + indicador de carga).
-- **Cada plataforma de deploy tiene sus mañas**: Vercel, Netlify, GitHub Pages y Render se comportan distinto frente al mismo repo. GitHub Pages solo permite servir desde `/` o `/docs` — eso definió mi estructura de carpetas.
-- **Las PWAs en iOS son finicky**: Safari tiene su propio set de meta tags (`apple-mobile-web-app-capable`, `apple-touch-icon` en varios tamaños) que son distintos del estándar PWA. Sin esos, no se instala bien.
-- **El sesgo de muestreo en crowdsourcing es real**: la diferencia entre "100 reportes positivos" y "100 positivos + 50 negativos" es enorme estadísticamente. Diseñar la UI para invitar reportes balanceados es tan importante como el algoritmo.
-
 ## 🤝 Contribuir
 
 Si vives en San Nicolás y quieres usar la app, simplemente abre [pedroiruegas.github.io/tren-jp2](https://pedroiruegas.github.io/tren-jp2/) en tu celular y agrégala a tu pantalla de inicio. Mientras más usuarios, más útil se vuelve y mejores son las predicciones.
